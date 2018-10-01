@@ -1,1 +1,2 @@
-exemplo teste
+#include <iostream>
+usinga namespace
