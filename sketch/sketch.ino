@@ -5,53 +5,39 @@
 #include <SD.h>
 #include <SPI.h>
 #include <MFRC522.h>
- 
-#define SS_PIN 10
-#define RST_PIN 9
- 
-MFRC522 mfrc522(SS_PIN, RST_PIN);
-TabelaHash objeto;
-int id;
-int matricula;
-char st[20];
+/*
+  #define SS_PIN 10
+  #define RST_PIN 9
 
+  MFRC522 mfrc522(SS_PIN, RST_PIN);*/
+
+template <typename T>
+
+inline Print& operator << (Print& streamer, const T& x) { // sobrecarga do operador <<
+  streamer.println(x);
+  return streamer;
+}
 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
-  //menuPrincipal();
-  SPI.begin();
-  // Inicia MFRC522    
-  mfrc522.PCD_Init();
-  Serial.println("Aproxime o seu cartao/TAG do leitor");
-  Serial.println();
+  Serial.begin(9600); // Inicializa a comunicação serial com uma taxa de 9600 bauds.
 
 }
 
-
 void loop() {
-   // Busca novos cartões 
-  if ( ! mfrc522.PICC_IsNewCardPresent())
-  {
-    return;
+  TabelaHash objeto(16);
+  int id = 0; // deveria ser o codigo do cartão rfid mas não conseguimos utilizar ele junto com o cartão SD
+  int matricula = 0;
+
+  if (Serial.available() > 0){
+    id = Serial.parseInt();
   }
-  // Seleciona um catão a ser lido
-  if ( ! mfrc522.PICC_ReadCardSerial())
-  {
-    return;
+  if (Serial.available() > 0){
+    matricula = Serial.parseInt();
   }
-  //Mostra ID na serial
-  Serial.print("ID da tag:");
-  String conteudo = "";
-  byte letra;
-  for (byte i = 0; i < mfrc522.uid.size; i++)
-  {
-    Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    Serial.print(mfrc522.uid.uidByte[i], HEX);
-    conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-    conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+
+  if(matricula != 0 and id != 0){
+    objeto.insere(matricula, id);
+    
   }
-  Serial.println();
-  Serial.print("Mensagem : ");
-  conteudo.toUpperCase();
+  
 }
