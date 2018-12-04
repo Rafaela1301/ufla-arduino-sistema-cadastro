@@ -1,8 +1,10 @@
 #ifndef NO_H
 #define NO_H
 class No { //class No
-    friend class Hash; //class No amiga da  class TabelaHasg
+    friend class TabelaHash; //class No amiga da  class TabelaHash
     friend class Bloco;
+    friend class Dado;
+    friend class Lista;
 public:
     //Construtor
     No() {

@@ -1,6 +1,8 @@
 #include "no.hpp"
 #include "bloco.hpp"
 #include "hash.hpp"
+#include "lista.hpp"
+#include "dado.hpp"
 #include <SPI.h>
 #include <SD.h>
 #include <SPI.h>
@@ -20,6 +22,12 @@ inline Print& operator << (Print& streamer, const T& x) { // sobrecarga do opera
 
 void setup() {
   Serial.begin(9600); // Inicializa a comunicação serial com uma taxa de 9600 bauds.
+  Serial.print("Inicializa SD card...");
+      if (!SD.begin(4)) {
+        Serial.println("inicializacao falhou!");
+        while (1);
+      }
+ Serial.println("Inicializado!.");
 
 }
 

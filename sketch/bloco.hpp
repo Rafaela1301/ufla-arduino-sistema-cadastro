@@ -2,6 +2,8 @@
 #ifndef BLOCO_H
 #define BLOCO_H
 #include "no.hpp"
+#include "lista.hpp"
+#include "dado.hpp"
 
 class Bloco { //class No
     friend class TabelaHash; //class No amiga da  class TabelaHash
@@ -11,16 +13,14 @@ public:
 
     Bloco() {
         bTamanho = 0;
-        ativo = true;
-        for (int i = 0; i < 4; i++) {
-            vetor[i].mId = -1;
-        }
+        bAtivo = true;
+        
     }
     
 private:
     //Atributos
     int bTamanho;
-    bool ativo;
-    No vetor[4];
+    bool bAtivo;
+    Lista bLista;
 };
 #endif
