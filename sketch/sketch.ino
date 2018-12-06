@@ -36,7 +36,7 @@ void loop() {
 
   if(matricula != 0 and id != 0){
     objeto.insere(id, matricula);
-    
+    objeto.percorre();
   }
   
 }

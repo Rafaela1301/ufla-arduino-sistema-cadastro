@@ -47,6 +47,112 @@ class TabelaHash { //Class TabelaHash
     }
 
     void insere(int id, int matricula) {
+      int h;
+      h = funcaoHash(id, altura);
+      int *vet = new int[altura];
+      vet = intToBin(h);
+      int posInsercao = 0;
+
+      for (int i = 0; i < altura; i++)
+      {
+        if (vet[i] == 0)
+        {
+          posInsercao += esquerda(posInsercao);
+        }
+
+        else
+        {
+          posInsercao += direita(posInsercao);
+        }
+      }
+      int *posicaoArquivo = new int;
+      *posicaoArquivo = posInsercao * sizeof(Bloco);
+      Bloco *blocoHash = new Bloco;
+      bool verificador = verificaChave(*posicaoArquivo);
+      if (verificador)
+      {
+        File user = SD.open("cerrado.txt");
+        user.seek(*posicaoArquivo/*, planta.beg*/);
+        user.read((char *)blocoHash, sizeof(Bloco));
+        user.close();
+      }
+      if (blocoHash->bTamanho < 4)
+      {
+        if (!verificaId(blocoHash, id))
+        {
+
+          int cont = 0;
+          bool achou = false;
+          while (cont < 4 && !achou)
+          {
+
+            if (blocoHash->vetor[cont].mId == -1)
+            {
+
+              blocoHash->vetor[cont].mId = id;
+              blocoHash->vetor[cont].mMatricula = matricula;
+              blocoHash->bTamanho++;
+              achou = true;
+            }
+            cont++;
+          }
+
+          File user = SD.open("info.txt");
+          if (user) {
+            user.close();
+            File user = SD.open("info.txt", FILE_WRITE);
+            user.seek(*posicaoArquivo);
+            user.write((char *)blocoHash, sizeof(Bloco));
+            user.close();
+          }
+          else
+          {
+            user.close();
+            File user = SD.open("info.txt", FILE_WRITE);
+            user.seek(*posicaoArquivo);
+            user.write((char *)blocoHash, sizeof(Bloco));
+            user.close();
+          }
+
+          if ((blocoHash->bTamanho - 1) == 0)
+          {
+            File mapa = SD.open("mapeamento.txt", FILE_WRITE);
+            if (mapa)
+            {
+              bool posAqr = false;
+              int *verificadorDoArquivo = new int;
+              int contPosicao = 0;
+              while (!mapa.available() && !posAqr)
+              {
+                mapa.read((char *)verificadorDoArquivo, sizeof(int));
+                if (*verificadorDoArquivo == -1)
+                {
+                  posAqr = true;
+                }
+                contPosicao++;
+              }
+
+              mapa.close();
+
+              File mapa = SD.open("mapeamento.txt", FILE_WRITE);
+              mapa.seek((contPosicao - 1) * sizeof(int));
+              mapa.write((char *)posicaoArquivo, sizeof(int));
+              mapa.close();
+            }
+            else
+            {
+              mapa.close();
+              File mapa = SD.open("mapeamento.txt", FILE_WRITE);
+              mapa.write((char *)posicaoArquivo, sizeof(int));
+            }
+          }
+        } else {
+          Serial << "\nID já inserido";
+        }
+      } else {
+        redimensiona();
+        insere(id, matricula);
+      }
     }
     void insereAux(int id, int matricula) {
       int h;
@@ -257,8 +363,31 @@ class TabelaHash { //Class TabelaHash
       entradaMapa.close();
       return indicador;
     }
-    bool verificaChaveAux(int h);
-    bool verificaId(Bloco* blocoHash, int id);
+    bool verificaChaveAux(int h) {
+      File entradaMapa = SD.open("mapeamentoAux.txt");
+      int *ph;
+      ph = new int;
+      bool indicador = false;
+      if (entradaMapa)
+      {
+        while (!entradaMapa.available() && indicador == false)
+        {
+          entradaMapa.read((char *)ph, sizeof(int));
+          if (h == *ph)
+          {
+            indicador = true;
+          }
+        }
+      }
+      entradaMapa.close();
+      return indicador;
+    }
+    bool verificaId(Bloco* blocoHash, int id) {
+      if (blocoHash->vetor[0].mId == id || blocoHash->vetor[1].mId == id || blocoHash->vetor[2].mId == id || blocoHash->vetor[3].mId == id){
+        return true;
+      }
+      return false;
+    }
     int* intToBin(int c) {
       int *binVet = new int[altura];
       for (int i = altura - 1; i >= 0; i--) {
@@ -346,8 +475,8 @@ class TabelaHash { //Class TabelaHash
       modAltura.write((char *)altWrite, sizeof(char));
       SD.remove("info.txt");
       SD.remove("mapeamento.txt");
-      rename("infoAux.txt", "info.txt");
-      rename("mapeamentoAux.txt", "mapeamento.txt");
+      //rename("infoAux.txt", "info.txt");
+      //rename("mapeamentoAux.txt", "mapeamento.txt");
       user.close();
       mapa.close();
     }
