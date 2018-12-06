@@ -1,25 +1,16 @@
 #include "no.hpp"
 #include "bloco.hpp"
 #include "hash.hpp"
-#include "lista.hpp"
-#include "dado.hpp"
 #include <SPI.h>
 #include <SD.h>
 #include <SPI.h>
-#include <MFRC522.h>
+
+//#include <MFRC522.h>
 /*
   #define SS_PIN 10
   #define RST_PIN 9
 
   MFRC522 mfrc522(SS_PIN, RST_PIN);*/
-
-template <typename T>
-
-inline Print& operator << (Print& streamer, const T& x) { // sobrecarga do operador <<
-  streamer.println(x);
-  return streamer;
-}
-
 void setup() {
   Serial.begin(9600); // Inicializa a comunicação serial com uma taxa de 9600 bauds.
   Serial.print("Inicializa SD card...");
@@ -44,7 +35,7 @@ void loop() {
   }
 
   if(matricula != 0 and id != 0){
-    objeto.insere(matricula, id);
+    objeto.insere(id, matricula);
     
   }
   
